@@ -96,15 +96,17 @@ class SiteController extends Controller
      * @return Response
      */
 
-    public function actionSignUp()
+    public function actionSignUp(){
+    if (Yii::$app->getUser()->login($user)) {
+        return $this->goHome();
     {
         if(!Yii::$app->user -> isGuest()) {
                 return $this -> goHome();
     }
     $model = new SignupForm();
     return $this -> render('signup', compact('model'));
+    }}}
 
-    }
     public function actionLogout()
     {
         Yii::$app->user->logout();

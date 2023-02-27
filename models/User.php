@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use yii\web\identityInterface;
 use Yii;
 
 
@@ -17,7 +18,7 @@ use Yii;
  *
  * @property Keep[] $keeps
  */
-class User extends \yii\db\ActiveRecord
+class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -42,6 +43,44 @@ class User extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne(['access_token' => $token]);
+    }
+    
+    public static function fingByUsername($username)
+    {return static::findOne(['username' => $username]); 
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        return $this->getAuthKey() === $authKey;
+    }
+
+    public function beforeSave($insert)
+    {
+        if(parent::beforeSave($insert)){
+            if($this->isNewRecord){
+                $this -> auth_key = \Yii::$app->security->generateRandomString();
+            }return true;
+        }return false;
+    }
+
+
     public function attributeLabels()
     {
         return [
