@@ -7,8 +7,10 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
+use app\models\User;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\SignupForm;
 
 class SiteController extends Controller
 {
@@ -75,6 +77,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -96,16 +99,22 @@ class SiteController extends Controller
      * @return Response
      */
 
-    public function actionSignUp(){
-    if (Yii::$app->getUser()->login($user)) {
-        return $this->goHome();
-    {
-        if(!Yii::$app->user -> isGuest()) {
-                return $this -> goHome();
-    }
-    $model = new SignupForm();
-    return $this -> render('signup', compact('model'));
-    }}}
+     public function actionSignup()
+     {
+         $model = new SignupForm();
+     
+         if ($model->load(Yii::$app->request->post()) && $model->signup()) { /*Save 
+     to DB first*/
+             $genmail = $model->email; //get model email value 
+             $identity = User::findOne(['email' => $genmail]); //find user by email
+             if (Yii::$app->user->login($identity)) { // login user
+                 return $this->redirect('account'); // show accaount page
+             }
+         }
+         return $this->render('signup', [
+             'model' => $model,
+         ]);
+     }
 
     public function actionLogout()
     {
