@@ -40,6 +40,7 @@ class KeepSearch extends Keep
      */
     public function search($params)
     {
+        
         $query = Keep::find();
 
         // add conditions that should always apply here

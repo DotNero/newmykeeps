@@ -15,6 +15,7 @@ use Yii;
  * @property string $password
  * @property string $auth_key
  * @property string $access_token
+ * 
  *
  * @property Keep[] $keeps
  */
@@ -34,9 +35,20 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password', 'auth_key', 'access_token'], 'required'],
-            [['username'], 'string', 'max' => 55],
-            [['password', 'auth_key', 'access_token'], 'string', 'max' => 255],
+            [['username', 'password'], 'required'],
+            ['username', 'string', 'min' => 4, 'max' => 16],
+            [['password'], 'string', 'min' => 8, 'max' => 32]
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'password' => 'Password',
+            'auth_key' => 'Auth Key',
+            'access_token' => 'Access Token',
         ];
     }
 
@@ -48,14 +60,26 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return static::findOne($id);
     }
 
+    public function validatePassword($password)
+    {
+        return \Yii::$app->security->validatePassword($password, $this->password);
+    }
+
+
     public static function findIdentityByAccessToken($token, $type = null)
     {
         return static::findOne(['access_token' => $token]);
     }
     
-    public static function fingByUsername($username)
-    {return static::findOne(['username' => $username]); 
+    public static function findByUsername($username)
+    {
+        $user = User::find()
+        ->where(['username' => $username])
+    ->one();
+    
+        return $user;
     }
+
     public function getId()
     {
         return $this->id;
@@ -66,6 +90,18 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return $this->auth_key;
     }
 
+    public function generateAuthKey()
+    {
+        $this -> auth_key = Yii::$app->getSecurity()->generateAuthKey();
+    }
+
+    public function setPassword($password)
+    {$this->password = Yii::$app -> sequrity -> generatePasswordHash($password);
+    }
+    public function setUsername($username)
+    {$this->username = $username;
+    }
+    
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
@@ -78,18 +114,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
                 $this -> auth_key = \Yii::$app->security->generateRandomString();
             }return true;
         }return false;
-    }
-
-
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'username' => 'Username',
-            'password' => 'Password',
-            'auth_key' => 'Auth Key',
-            'access_token' => 'Access Token',
-        ];
     }
 
     /**
