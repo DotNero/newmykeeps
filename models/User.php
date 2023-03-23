@@ -35,9 +35,16 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+<<<<<<< HEAD
             [['username', 'password'], 'required'],
             ['username', 'string', 'min' => 4, 'max' => 16],
             [['password'], 'string', 'min' => 8, 'max' => 32]
+=======
+            [['username', 'password', 'password_repeat'], 'required'],
+            ['username', 'string', 'min' => 4, 'max' => 16],
+            [['password', 'password_repeat'], 'string', 'min' => 8, 'max' => 32],
+            [['password_repeat'], 'compare', 'compareAttribute' => 'password']
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
         ];
     }
 
@@ -74,7 +81,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public static function findByUsername($username)
     {
         $user = User::find()
+<<<<<<< HEAD
         ->where(['username' => $username])
+=======
+        ->where(['usr_id' => $username])
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
     ->one();
     
         return $user;
@@ -98,9 +109,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function setPassword($password)
     {$this->password = Yii::$app -> sequrity -> generatePasswordHash($password);
     }
+<<<<<<< HEAD
     public function setUsername($username)
     {$this->username = $username;
     }
+=======
+
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
     
     public function validateAuthKey($authKey)
     {

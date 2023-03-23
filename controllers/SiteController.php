@@ -100,6 +100,7 @@ class SiteController extends Controller
      */
 
      public function actionSignup()
+<<<<<<< HEAD
     {
         $model = new SignupForm();
 
@@ -112,6 +113,23 @@ class SiteController extends Controller
         
     }
      
+=======
+     {
+         $model = new SignupForm();
+     
+         if ($model->load(Yii::$app->request->post()) && $model->signup()) { /*Save 
+     to DB first*/
+             $genmail = $model->email; //get model email value 
+             $identity = User::findOne(['email' => $genmail]); //find user by email
+             if (Yii::$app->user->login($identity)) { // login user
+                 return $this->redirect('account'); // show accaount page
+             }
+         }
+         return $this->render('signup', [
+             'model' => $model,
+         ]);
+     }
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
 
     public function actionLogout()
     {

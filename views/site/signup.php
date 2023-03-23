@@ -12,7 +12,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>Please fill out the following fields to signup:</p>
 
     <?php $form = ActiveForm::begin([
+<<<<<<< HEAD
         'id' => 'signup-form',
+=======
+        'id' => 'signup-forn',
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
         'layout' => 'horizontal',
         'fieldConfig' => [
             'template' => "{label}\n{input}\n{error}",
@@ -25,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
 <?= $form->field($model, 'password')->passwordInput() ?>
+<<<<<<< HEAD
 
 <div class="form-group">
             <div class="offset-lg-1 col-lg-11">
@@ -34,4 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
         <?php ActiveForm::end(); ?>
+=======
+>>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
 </div>
