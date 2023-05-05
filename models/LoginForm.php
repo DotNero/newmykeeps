@@ -62,6 +62,7 @@ class LoginForm extends Model
         //немного не понимаю, как работает validate, я испробовал разные способы -- обращаться напрямую к этому методу через User:validatePassword
         if ($this->validate()) {
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+            
         }
         return false;
     }

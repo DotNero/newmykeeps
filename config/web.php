@@ -4,6 +4,7 @@ $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
+
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -25,6 +26,8 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'enableSession' => false,
+            'loginUrl' => null,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -46,14 +49,29 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
-            'enablePrettyUrl' => false,
-            'enableStrictParsing' => true,
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => false,
             'showScriptName' => false,
-            'rules' => ['/' => 'site/index',
-                        'about' => 'site/about',
-                        'contact' => 'site/contact',
-                        'login' => 'site/login',],
+            
+            'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => [
+                        'api/user',
+                    ],
+                    'pluralize' => false,
+                ],
             ],
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\PhpManager',
+            'defaultRoles' => ['admin', 'student', 'company'],
+        ],
+        ],
+        'modules' => [
+            'api' => [
+                'class' => 'app\modules\api\Rest'
+            ]
         ],
     'params' => $params,
 ];

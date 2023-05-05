@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Keep;
+use Yii;
 
 /**
  * KeepSearch represents the model behind the search form of `app\models\Keep`.
@@ -41,7 +42,8 @@ class KeepSearch extends Keep
     public function search($params)
     {
         
-        $query = Keep::find();
+        $query = Keep::find()
+                ->where(['created_by' => Yii::$app->user->id]);
 
         // add conditions that should always apply here
 

@@ -11,6 +11,8 @@ use app\models\User;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\SignupForm;
+use yii\web\ForbiddenHttpException;
+use app\models\StudentContactForm;
 
 class SiteController extends Controller
 {
@@ -20,21 +22,21 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['login', 'logout', 'signup'],
-                'rules' => [
-                    [   
-                        'actions' => ['login', 'signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    ['allow' => true,
-                     'actions'=> ['logout'],
-                     'roles'=> ['@'],
-                ],
-                ],
-            ],
+            // 'access' => [
+            //     'class' => AccessControl::class,
+            //     'only' => ['login', 'logout', 'signup'],
+            //     'rules' => [
+            //         [   
+            //             'actions' => ['login', 'signup'],
+            //             'allow' => true,
+            //             'roles' => ['?'],
+            //         ],
+            //         ['allow' => true,
+            //          'actions'=> ['logout'],
+            //          'roles'=> ['@'],
+            //     ],
+            //     ],
+            // ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -47,6 +49,19 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
+
+ public function beforeAction($action)
+ {
+    if(parent::beforeAction($action)){
+        if(!Yii::$app->user->can($action->id)){
+            throw new ForbiddenHttpException('Access denied');
+        }
+        return true;
+    }
+    else{
+        return false;
+    }
+ }
     public function actions()
     {
         return [
@@ -99,37 +114,31 @@ class SiteController extends Controller
      * @return Response
      */
 
+     public function actionsStudentSignup()
+     {
+        $model = new StudentSignupForm();
+        if($model->load(Yii::$app->reqest->post()) && $model->signup)
+        {
+            Yii::$app->session->addFlash('SIGNUP', 'your student account have successfuly registered');
+        }
+     }
      public function actionSignup()
-<<<<<<< HEAD
     {
         $model = new SignupForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->signup()){
             Yii::$app->session->addFlash('SIGNUP', 'You have successfully registered');
+            if($model->role_routing=="Student")
+            {return $this->redirect("/web/index.php?r=site%2Fabout");}
             return $this->redirect(Yii::$app->homeUrl);
         }
         Yii::$app->session->addFlash('SIGNUP', 'We have some troubles with your account, sorry');
         return $this->render('signup',['model'=>$model]);
+
+        //переписать этот метод, так, чтобы происходило разделение 
         
     }
      
-=======
-     {
-         $model = new SignupForm();
-     
-         if ($model->load(Yii::$app->request->post()) && $model->signup()) { /*Save 
-     to DB first*/
-             $genmail = $model->email; //get model email value 
-             $identity = User::findOne(['email' => $genmail]); //find user by email
-             if (Yii::$app->user->login($identity)) { // login user
-                 return $this->redirect('account'); // show accaount page
-             }
-         }
-         return $this->render('signup', [
-             'model' => $model,
-         ]);
-     }
->>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
 
     public function actionLogout()
     {

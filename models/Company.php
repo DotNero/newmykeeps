@@ -3,7 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
-use yii\web\identityInterface;
+use yii\app\models\User;
 use Yii;
 
 
@@ -19,14 +19,14 @@ use Yii;
  *
  * @property Keep[] $keeps
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface
+class Company extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'user';
+        return 'company';
     }
 
     /**
@@ -35,18 +35,26 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['mail','required'], 
-            [['password'], 'string', 'min' => 8, 'max' => 32],
+            [['name', 'number','discription','adress'], 'required'],
+            ['name', 'string', 'max' => 16],
+            ['number', 'int','min'=> 18, 'max'=> 19],
+            ['discription', 'string', 'max' => 1000 ],
+            [['password'], 'string', 'min' => 8, 'max' => 32]
         ];
     }
 
     public function attributeLabels()
     {
         return [
+            'id' => 'ID',
+            'name' => 'Name',
+            'number' => 'Number',
+            'discription' => 'Discription',
+            'adress' => 'Adress',
+            'mail_list_on' => 'Mail List On',
+            'is_mail_connect' => 'Is Mail Connect',
+            'user_id' => 'User Id', 
             
-            'password' => 'Password',
-            'access_token' => 'Access Token',
-            'mail' => 'Mail',
         ];
     }
 
@@ -69,10 +77,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return static::findOne(['access_token' => $token]);
     }
     
-    public static function findByUsername($mail)
+    public static function findByNameSurname($name,$surname)
     {
-        $user = User::find()
-        ->where(['mail' => $mail])
+        $user = Company::find()
+        ->where(['mail' => $name])
     ->one();
     
         return $user;
@@ -96,7 +104,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function setPassword($password)
     {$this->password = Yii::$app -> sequrity -> generatePasswordHash($password);
     }
-    public function setMail($mail)
+    public function setUsername($mail)
     {$this->mail = $mail;
     }
     

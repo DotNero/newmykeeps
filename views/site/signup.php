@@ -12,11 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>Please fill out the following fields to signup:</p>
 
     <?php $form = ActiveForm::begin([
-<<<<<<< HEAD
         'id' => 'signup-form',
-=======
-        'id' => 'signup-forn',
->>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
         'layout' => 'horizontal',
         'fieldConfig' => [
             'template' => "{label}\n{input}\n{error}",
@@ -26,12 +22,35 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 
-<?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+<?= $form->field($model, 'mail')->textInput(['autofocus' => true]) ?>
 
 <?= $form->field($model, 'password')->passwordInput() ?>
-<<<<<<< HEAD
+
+<!-- <button type="button" class="btn btn-primary btn-sm" name = "stundet-button" value = "student">Student</button>
+<button type="button" class="btn btn-secondary btn-sm" name = "company-button" valuse = "company" onClick = "" >Company</button> -->
+<script>
+    function StudentButton(){
+$this => $role_routing = "student";
+    }
+    function ConpanyButton(){
+$this => $role_routing = "company"
+    }
+</script>
+
 
 <div class="form-group">
+            <div class="offset-lg-1 col-lg-11">
+                <?= Html::submitButton('Student', ['class' => 'btn btn-primary', 'name' => 'student-button', 'onClick' => 'StudentButton'] ) ?>
+            </div>
+            <div class="offset-lg-1 col-lg-11">
+                <?= Html::submitButton('Company', ['class' => 'btn btn-primary', 'name' => 'company-button', 'onClick'=>'CompanyButton']) ?>
+            </div>
+        </div>
+
+<div class = "form-group">
+    <div class= "offset-lg-1 col-lg-11">
+
+    <div class="form-group">
             <div class="offset-lg-1 col-lg-11">
                 <?= Html::submitButton('Signup', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
     
@@ -39,6 +58,4 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
         <?php ActiveForm::end(); ?>
-=======
->>>>>>> 3cf1a60fb592c0a2e9ab73f08462cae40827291a
 </div>
