@@ -8,41 +8,43 @@ use yii\db\ActiveRecord;
 use yii\base\Model;
 use yii\helpers\VarDumper;
 
-class SignupForm extends Model{
-    public $password;
-    public $access_token;
+class CompanySignupForm extends Model{
     public $name;
     public $number;
-    public $descripton;
+    public $discription;
     public $adress;
+    public $user_id;
+    public $avatar;
 
 
 public function rules()
 {
     return [
-        [['mail','name', 'password','number'], 'required'],
+        [['name', 'required'],
         ['name', 'string', 'min' => 4, 'max' => 16],  
-        ['mail','unique', 'targetClass'=> '\app\models\User', 'message' => 'this mail is already registered'],  
-        ['name', 'unique', 'targetClass' => '\app\models\Company', 'message' => 'this username already taken'],
-        [['password'], 'string', 'min' => 8, 'max' => 32]
-    ];
+        ['name', 'unique', 'targetClass' => '\app\models\Company', 'message' => 'Company with equal name is alreade registered'],  
+        ['description', 'string'],
+        ['number', 'int' , 'min'=>11, 'max'=>16],
+        ['number', 'match', 'pattern'=> '^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$'],
+    ]];
 }
 public function signup() 
 {      
         $company = new Company();
         $company->name = $this->name;
         $company->number = $this->number;
+        $company->adress = $this->adress;
+        $company->avatar = $this->avatar;
         $company->discription = $this->discription;
-        $company->mail_list_on = $this->mail_list_on;
-        $company->user_id = Yii::$app->user->id;
+        $company->user_id = $this->user_id;
         
-       $uniq = Company::find()->where(['name' => $company->name, 'number'=>$company->number]);
-       if(!$uniq){
-                if ($company->save(false)){
-                    return true;
-                }}
-            else{
-                \Yii::error("User was not saved: ".VarDumper::dumpAsString($company->errors));
-                return false;}
-    }}
-
+        $uniq = Company::find()->where(['user_id'=>$company->user_id, 'name'=>$company->name])->one();
+    if(!$uniq){
+    if ($company->save(false)){
+        return true;
+          
+    }
+    return false;}
+    return false;
+}
+}

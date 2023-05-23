@@ -69,9 +69,9 @@ class Student extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSummuries()
+    public function getSummary()
     {
-        return $this->hasMany(Summury::class, ['created_by' => 'id']);
+        return $this->hasMany(Summary::class, ['created_by' => 'id']);
     }
 
     /**
@@ -79,8 +79,4 @@ class Student extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
-    {
-        return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
 }

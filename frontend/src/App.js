@@ -1,23 +1,27 @@
 import React, {useState} from 'react';
-
+import Navbar from './components/navbar/Navbar'
+// import './styles/App.css'
+import './styles/Navbar.css'
 
 function App() {
-  const [likes, setLikes] = useState(5)
-  const [value, setValue] = useState()
-  function increment(){
-    setLikes(likes+1)
-  }
-  function decrement(){
-    setLikes(likes-1)
-  }
-  return (
-    <div className="App">
 
-      <h1>{likes}</h1>
-      <button onClick = {increment}>Increment</button>
-      <button onClick = {decrement}>Decrement</button>
-     
-    </div>
+  return (
+    <Navbar/>
+    // <div className="App">
+    //     <div className = "post">
+    //       <div className = "post__content">
+    //         <strong>1.Strong</strong>
+    //         <div>
+    //           Javascript - zpsr ghjuhfvvbhjdfybz
+    //         </div>
+    //         <div className = "post__btns">
+    //           <button>Удалить</button>
+    //         </div>
+          
+    //       </div> 
+    //     </div>
+
+    // </div>
   );
 }
 

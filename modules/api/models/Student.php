@@ -5,17 +5,13 @@ use app\models\Student as MStudent;
 
 class Student extends MStudent
 {
-    public function fields()
-    {
-        return['id','name','second_name','surname'];
-    }
+    public function fields(){
+		return parent::fields();
+	}
+
 
     public function extraFields()
     {
         return ['summary'];
-    }
-
-    public function getSummary(){
-        return $this->hasMany(Summary::class,['created_by' => 'id']);
     }
 }

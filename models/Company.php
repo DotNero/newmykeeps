@@ -2,22 +2,21 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
-use yii\app\models\User;
 use Yii;
 
-
 /**
- * This is the model class for table "user".
+ * This is the model class for table "company".
  *
  * @property int $id
- * @property string $mail
- * @property string $password
- * @property string $auth_key
- * @property string $access_token
- * 
+ * @property string $name
+ * @property int $number
+ * @property string $discription
+ * @property string $adress
+ * @property int $user_id
+ * @property string $avatar
  *
- * @property Keep[] $keeps
+ * @property User $user
+ * @property Vacancy[] $vacancies
  */
 class Company extends \yii\db\ActiveRecord
 {
@@ -35,14 +34,18 @@ class Company extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'number','discription','adress'], 'required'],
-            ['name', 'string', 'max' => 16],
-            ['number', 'int','min'=> 18, 'max'=> 19],
-            ['discription', 'string', 'max' => 1000 ],
-            [['password'], 'string', 'min' => 8, 'max' => 32]
+            [['name', 'number', 'discription', 'adress', 'user_id', 'avatar'], 'required'],
+            [['number', 'user_id'], 'integer'],
+            [['discription'], 'string'],
+            [['name', 'adress', 'avatar'], 'string', 'max' => 255],
+            [['user_id'], 'unique'],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels()
     {
         return [
@@ -51,85 +54,28 @@ class Company extends \yii\db\ActiveRecord
             'number' => 'Number',
             'discription' => 'Discription',
             'adress' => 'Adress',
-            'mail_list_on' => 'Mail List On',
-            'is_mail_connect' => 'Is Mail Connect',
-            'user_id' => 'User Id', 
-            
+            'user_id' => 'User ID',
+            'avatar' => 'Avatar',
         ];
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id)
-    {
-        return static::findOne($id);
-    }
-
-    public function validatePassword($password)
-    {
-        return \Yii::$app->security->validatePassword($password, $this->password);
-    }
-
-
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        return static::findOne(['access_token' => $token]);
-    }
-    
-    public static function findByNameSurname($name,$surname)
-    {
-        $user = Company::find()
-        ->where(['mail' => $name])
-    ->one();
-    
-        return $user;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-
-    public function generateAuthKey()
-    {
-        $this -> auth_key = Yii::$app->getSecurity()->generateAuthKey();
-    }
-
-    public function setPassword($password)
-    {$this->password = Yii::$app -> sequrity -> generatePasswordHash($password);
-    }
-    public function setUsername($mail)
-    {$this->mail = $mail;
-    }
-    
-    public function validateAuthKey($authKey)
-    {
-        return $this->getAuthKey() === $authKey;
-    }
-
-    public function beforeSave($insert)
-    {
-        if(parent::beforeSave($insert)){
-            if($this->isNewRecord){
-                $this -> auth_key = \Yii::$app->security->generateRandomString();
-            }return true;
-        }return false;
-    }
-
-    /**
-     * Gets query for [[Keeps]].
+     * Gets query for [[User]].
      *
      * @return \yii\db\ActiveQuery
      */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
 
-
-     //public function getSummary()
-    //  {return $this->hasMany(Summary::class, ['created_at' => 'id']);
-    // }
+    /**
+     * Gets query for [[Vacancies]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVacancy()
+    {
+        return $this->hasMany(Vacancy::class, ['company_id' => 'id']);
+    }
 }

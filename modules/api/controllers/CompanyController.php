@@ -1,10 +1,12 @@
 <?php 
 
 namespace app\modules\api\controllers;
-use app\modules\api\models\Company;
-use yii\rest\ActiveController;
 
-class CompanyController extends ActiveController 
+use app\modules\api\models\BasicApiController;
+use app\modules\api\models\Company;
+
+
+class CompanyController extends BaseApiController
 {
     public $modelClass = Company::class;
 

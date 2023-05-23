@@ -1,17 +1,22 @@
-<?php 
+<?php
+
 namespace app\modules\api\models;
 
-use app\models\Company as MCompany;
+use Yii;
+use yii\helpers\Url;
+use yii\web\Linkable;
 
+use app\models\Company as MCompany;
 class Company extends MCompany
 {
+
     public function fields()
     {
-        return['id','name','number'];
+        return parent::fields();
     }
-
     public function extraFields()
     {
-        return [];
+        return['vacancy'];
     }
+
 }

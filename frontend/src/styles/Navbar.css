@@ -1,0 +1,32 @@
+
+#root {
+  display: flex;
+  justify-content: center;
+}
+
+a {text-decoration: none; /*убираем подчеркивание текста ссылок*/}
+
+.navbar nav{
+  margin: 0 auto 30px;
+}
+
+.navbar ul {
+  width:1440px;
+  list-style: none; /*убираем маркеры списка*/
+  margin: 0 auto; /*убираем верхнее и нижнее поле, равное 1em*/
+  padding: 1em 0;
+  background: #ECDAD6;
+  display: flex;
+  }
+  .navbar a {
+    padding: 1em;
+    background: rgba(177, 152, 145, .3);
+    border-right: 1px solid #b19891;
+    color: #695753;
+  }
+  .navbar a:hover {
+    background: #b19891;;
+  }
+  .navbar li{
+    float:left;
+  }

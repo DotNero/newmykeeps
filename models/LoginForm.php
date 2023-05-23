@@ -26,7 +26,7 @@ class LoginForm extends Model
     {
         return [
             // username and password are both required
-            [['username', 'password'], 'required'],
+            [['mail', 'password'], 'required'],
             // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
@@ -85,9 +85,13 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
+ 
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError('password', 'Неверное имя пользователя или пароль.');
+            } elseif ($user && $user->status == User::STATUS_BLOCKED) {
+                $this->addError('mail', 'Ваш аккаунт заблокирован.');
+            } elseif ($user && $user->status == User::STATUS_WAIT) {
+                $this->addError('mail', 'Ваш аккаунт не подтвежден.');
             }
         }
     }

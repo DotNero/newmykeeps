@@ -5,10 +5,13 @@ use app\models\User as ModelsUser;
 
 class User extends ModelsUser
 {
-    public function fields()
-    {
-        return['id','mail'];
-    }
+    public function fields(){
+		$fields =  parent::fields();
+
+        unset($fields['auth_key'],$fields['password'],$fields['password_reset_token'],$fields['access_token'],$fields['mail_confirm_token']);
+        return $fields;
+	}
+
 
     public function extraFields()
     {
@@ -16,14 +19,5 @@ class User extends ModelsUser
             'company',
             'student',
         ];
-    }
-//Связь один к одному
-    public function getCompany(){
-       return $this->hasOne(Company::class, ['user_id' => 'id']);
-    }
-//Связь один к одному
-
-    public function getStudent(){
-        return $this->hasOne(Student::class, ['user_id'=>'id']);
     }
 }

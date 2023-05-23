@@ -3,6 +3,11 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\EmailConfirm;
+use yii\base\InvalidArgumentException;
+use app\models\PasswordResetRequestForm;
+use app\models\PasswordResetForm;
+use yii\web\BadRequestHttpException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -12,7 +17,8 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\SignupForm;
 use yii\web\ForbiddenHttpException;
-use app\models\StudentContactForm;
+use app\models\StudentsignupForm;
+use app\models\CompanySignupform;
 
 class SiteController extends Controller
 {
@@ -22,6 +28,27 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['login', 'logout', 'signup'], 
+                'denyCallback' => function() {
+                    die('Доступ запрещен');
+                },
+            'rules' => [
+
+                [
+                    'allow' => true,
+                    'actions' => ['login', 'signup'],
+                    'roles' => ['?'],
+                ],
+
+                [
+                    'allow' => true,
+                    'actions' => ['logout'],
+                    'roles' => ['user_au'],
+                ],
+            ]
+            ],
             // 'access' => [
             //     'class' => AccessControl::class,
             //     'only' => ['login', 'logout', 'signup'],
@@ -50,27 +77,12 @@ class SiteController extends Controller
      * {@inheritdoc}
      */
 
- public function beforeAction($action)
- {
-    if(parent::beforeAction($action)){
-        if(!Yii::$app->user->can($action->id)){
-            throw new ForbiddenHttpException('Access denied');
-        }
-        return true;
-    }
-    else{
-        return false;
-    }
- }
+
     public function actions()
     {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
     }
@@ -108,36 +120,104 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionPasswordResetRequest()
+    {
+        $model = new PasswordResetRequestForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail()) {
+                Yii::$app->getSession()->setFlash('success', 'Спасибо! На ваш Email было отправлено письмо со ссылкой на восстановление пароля.');
+ 
+                return $this->goHome();
+            } else {
+                Yii::$app->getSession()->setFlash('error', 'Извините. У нас возникли проблемы с отправкой.');
+            }
+        }
+ 
+        return $this->render('passwordResetRequest', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionEmailConfirm($token)
+    {
+        try {
+            $model = new EmailConfirm($token);
+        } catch (InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+ 
+        if ($model->confirmEmail()) {
+            Yii::$app->getSession()->setFlash('success', 'Спасибо! Ваш Email успешно подтверждён.');
+        } else {
+            Yii::$app->getSession()->setFlash('error', 'Ошибка подтверждения Email.');
+        }
+ 
+        return $this->goHome();
+    }
     /**
      * Logout action.
      *
      * @return Response
      */
-
-     public function actionsStudentSignup()
+    
+    public function actionPasswordReset($token)
+    {
+        try {
+            $model = new PasswordResetForm($token);
+        } catch (InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+ 
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+            Yii::$app->getSession()->setFlash('success', 'Спасибо! Пароль успешно изменён.');
+ 
+            return $this->goHome();
+        }
+ 
+        return $this->render('passwordReset', [
+            'model' => $model,
+        ]);
+    }
+     public function actionsStudentsignup()
      {
-        $model = new StudentSignupForm();
+        $model = new StudentsignupForm();
         if($model->load(Yii::$app->reqest->post()) && $model->signup)
         {
             Yii::$app->session->addFlash('SIGNUP', 'your student account have successfuly registered');
         }
+        return $this->render('studentsg',['model'=>$model]);
      }
-     public function actionSignup()
-    {
-        $model = new SignupForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->signup()){
-            Yii::$app->session->addFlash('SIGNUP', 'You have successfully registered');
-            if($model->role_routing=="Student")
-            {return $this->redirect("/web/index.php?r=site%2Fabout");}
-            return $this->redirect(Yii::$app->homeUrl);
+     public function actionsCompanySignup()
+     {
+        $model = new CompanySignupForm();
+        if($model->load(Yii::$app->reqest->post()) && $model->signup)
+        {
+            Yii::$app->session->addFlash('SIGNUP', 'your student account have successfuly registered');
         }
-        Yii::$app->session->addFlash('SIGNUP', 'We have some troubles with your account, sorry');
-        return $this->render('signup',['model'=>$model]);
+        return $this->render('studentsg',['model'=>$model]);
+     }
+     
+     public function actionSignup()
+     {
+         $model = new SignupForm();
+         $post = Yii::$app->request->post();
 
-        //переписать этот метод, так, чтобы происходило разделение 
-        
-    }
+         if ($model->load($post) && $model->signup()){
+
+             if($post['signup-button'] === "student")
+             {   
+                 return $this->redirect(['/site/student-signup']);
+
+             }
+             if($post['signup-button'] === "company")
+             {
+                return $this->redirect(['/site/company-signup']);
+             }
+         }
+         return $this->render('signup',['model'=>$model]);  
+     }
+      
      
 
     public function actionLogout()
@@ -152,18 +232,6 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
 
     /**
      * Displays about page.

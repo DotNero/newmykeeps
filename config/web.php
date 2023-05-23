@@ -13,6 +13,17 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'mailer' =>
+        [
+        'class' => 'Swift_SmtpTransport',
+        'host' => 'smtp.yandex.ru',
+        'username' => 'username',
+        'password' => 'password',
+        'port' => '587',
+        'encryption' => 'tls',
+            
+        ],
+
         'request' => [
             'parsers' =>[
                 'application/json' => 'yii\web\JsonParser',
@@ -25,9 +36,8 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
             'enableSession' => false,
-            'loginUrl' => null,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -50,28 +60,55 @@ $config = [
         'db' => $db,
         'urlManager' => [
             'enablePrettyUrl' => true,
-            'enableStrictParsing' => false,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
-            
+
             'rules' => [
+                '' => 'api/site/index',
+                // 'POST auth' => 'api/site/login',
+
+                // 'GET profile' => 'profile/index',
+                // 'PUT,PATCH profile' => 'profile/update',
+
+                '<action:\w+>' => 'site/<action>',
                 [
-                    'class' => 'yii\rest\UrlRule', 
+                    'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'api/user',
+                        'api/auth' => 'api/site'
+                    ],
+                    'extraPatterns' => [
+
+                        'OPTIONS login' => 'login',
+                        'POST login' => 'login',
+                        'OPTIONS register' => 'register',
+                        'POST register' => 'register',
+                        'OPTIONS student-register' => 'student-register',
+                        'POST student-register' => 'student-register',
+                        'OPTIONS company-register' => 'company-register',
+                        'POST company-register' => 'company-register',
+                        'OPTIONS add-vacancy' => 'add-vacancy',
+                        'POST add-vacancy' => 'add-vacancy',
+                        'OPTIONS get-vacancy' => 'get-vacancy',
+                        'GET get-vacancy' =>'get-vacancy',
+                        
                     ],
                     'pluralize' => false,
                 ],
+
             ],
         ],
         'authManager' => [
-            'class' => 'yii\rbac\PhpManager',
-            'defaultRoles' => ['admin', 'student', 'company'],
+            'class' => 'yii\rbac\DbManager',
         ],
         ],
         'modules' => [
             'api' => [
-                'class' => 'app\modules\api\Rest'
-            ]
+                'class' => app\modules\api\Rest::class,
+                'controllerMap' => [
+                    'site' => \app\modules\api\controllers\SiteController::class,
+                ]
+            ],
+            
         ],
     'params' => $params,
 ];
